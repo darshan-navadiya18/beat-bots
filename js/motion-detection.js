@@ -11,29 +11,33 @@ const audioPath =  "sound"
 contextSource.translate(canvasSource.width, 0);
 contextSource.scale(-1, 1);
 
-
-
-$("#webcam-switch").change(function () {
-  if(this.checked){
-      $('.md-modal').addClass('md-show');
-      webcam.start()
-          .then(result =>{
-            cameraStarted();
-            loadSounds();
-            startMotionDetection();
-          })
-          .catch(err => {
-              displayError();
-          });
+$('.webcam-pause').click(function (){
+  if( $('webcam-pause').hasClass('d-none')){
+    $('.webcam-pause').removeClass('d-none');
+    webcam.stop();
+    cameraStopped();
+    setAllDrumReadyStatus(false);
+  }else{
+    $('.webcam-pause').addClass('d-none');
+    webcam.start()
+    .then(result =>{
+      cameraStarted();
+      loadSounds();
+      startMotionDetection();
+    })
+    .catch(err => {
+        displayError();
+    });
   }
-  else {        
-      $("#errorMsg").addClass("d-none");
-      webcam.stop();
-      cameraStopped();
-      setAllDrumReadyStatus(false);
-  }        
-});
+})
 
+$('.drum-container').click(function (){
+  if(! $('.webcam-pause').hasClass('d-none')) return;
+  $('.webcam-pause').removeClass('d-none');
+  webcam.stop();
+  cameraStopped();
+  setAllDrumReadyStatus(false);
+})
 
 $('.virtual-drum').on('load', function () {
     var viewWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
@@ -214,21 +218,11 @@ function setAllDrumReadyStatus(isReady){
 }
 
 function cameraStarted(){
-  $("#errorMsg").addClass("d-none");
-  $("#webcam-caption").html("on");
-  $("#webcam-control").removeClass("webcam-off");
-  $("#webcam-control").addClass("webcam-on");
-  $(".webcam-container").removeClass("d-none");
   $(canvasBlended).delay(600).fadeIn(); 
   $(".motion-cam").delay(600).fadeIn();
   $("#wpfront-scroll-top-container").addClass("d-none");
 }
 
 function cameraStopped(){
-  $("#errorMsg").addClass("d-none");
-  $("#webcam-control").removeClass("webcam-on");
-  $("#webcam-control").addClass("webcam-off");
-  $(".webcam-container").addClass("d-none");
   $("#webcam-caption").html("Click to Start Webcam");
-  $('.md-modal').removeClass('md-show');
 }
